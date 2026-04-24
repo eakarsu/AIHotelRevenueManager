@@ -1,0 +1,118 @@
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import {
+  Hotel,
+  LayoutDashboard,
+  BedDouble,
+  DollarSign,
+  Share2,
+  Users,
+  Sparkles,
+  ShoppingBag,
+  CalendarCheck,
+  BarChart3,
+  MessageSquare,
+  LogOut,
+  Brush,
+  UserCog,
+  Wrench,
+  Tag,
+  Building2,
+  TrendingUp,
+  Receipt,
+  FileText,
+  CalendarDays,
+  Bell,
+} from 'lucide-react';
+
+const navItems = [
+  { to: '/', icon: LayoutDashboard, label: 'Dashboard', section: 'overview' },
+  { to: '/rooms', icon: BedDouble, label: 'Room Inventory', section: 'management' },
+  { to: '/reservations', icon: CalendarCheck, label: 'Reservations', section: 'management' },
+  { to: '/guests', icon: Users, label: 'Guest Management', section: 'management' },
+  { to: '/housekeeping', icon: Brush, label: 'Housekeeping', section: 'management' },
+  { to: '/pricing', icon: DollarSign, label: 'Dynamic Pricing', section: 'revenue' },
+  { to: '/channels', icon: Share2, label: 'Channel Distribution', section: 'revenue' },
+  { to: '/upsells', icon: ShoppingBag, label: 'Upsell Recommendations', section: 'revenue' },
+  { to: '/analytics', icon: BarChart3, label: 'Revenue Analytics', section: 'intelligence' },
+  { to: '/reviews', icon: MessageSquare, label: 'Reviews & Sentiment', section: 'intelligence' },
+  { to: '/staff', icon: UserCog, label: 'Staff Management', section: 'management' },
+  { to: '/maintenance', icon: Wrench, label: 'Maintenance', section: 'management' },
+  { to: '/promotions', icon: Tag, label: 'Promotions', section: 'revenue' },
+  { to: '/competitors', icon: Building2, label: 'Competitor Analysis', section: 'intelligence' },
+  { to: '/forecasting', icon: TrendingUp, label: 'Forecasting', section: 'intelligence' },
+  { to: '/billing', icon: Receipt, label: 'Billing & Invoicing', section: 'revenue' },
+  { to: '/reports', icon: FileText, label: 'Reports & Export', section: 'revenue' },
+  { to: '/calendar', icon: CalendarDays, label: 'Calendar View', section: 'management' },
+  { to: '/notifications', icon: Bell, label: 'Notifications', section: 'overview' },
+];
+
+const sections = {
+  overview: 'Overview',
+  management: 'Management',
+  revenue: 'Revenue',
+  intelligence: 'AI Intelligence',
+};
+
+export default function Sidebar() {
+  const { user, logout } = useAuth();
+
+  const grouped = {};
+  navItems.forEach((item) => {
+    if (!grouped[item.section]) grouped[item.section] = [];
+    grouped[item.section].push(item);
+  });
+
+  const initials = user?.name
+    ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+    : user?.email?.[0]?.toUpperCase() || 'U';
+
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-brand">
+        <div className="sidebar-brand-icon">
+          <Hotel size={20} />
+        </div>
+        <div className="sidebar-brand-text">
+          <h2>AI Hotel Revenue</h2>
+          <span>Manager</span>
+        </div>
+      </div>
+
+      <nav className="sidebar-nav">
+        {Object.entries(grouped).map(([section, items]) => (
+          <div key={section}>
+            <div className="sidebar-section-label">{sections[section]}</div>
+            {items.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                className={({ isActive }) =>
+                  `sidebar-link${isActive ? ' active' : ''}`
+                }
+              >
+                <item.icon size={20} />
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+        ))}
+      </nav>
+
+      <div className="sidebar-footer">
+        <div className="sidebar-user">
+          <div className="sidebar-avatar">{initials}</div>
+          <div className="sidebar-user-info">
+            <p>{user?.name || 'User'}</p>
+            <span>{user?.email || ''}</span>
+          </div>
+        </div>
+        <button className="sidebar-logout" onClick={logout}>
+          <LogOut size={16} />
+          Sign out
+        </button>
+      </div>
+    </aside>
+  );
+}
