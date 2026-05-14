@@ -23,6 +23,10 @@ import {
   FileText,
   CalendarDays,
   Bell,
+  Zap,
+  History,
+  Heart,
+  Target,
 } from 'lucide-react';
 
 const navItems = [
@@ -45,6 +49,11 @@ const navItems = [
   { to: '/reports', icon: FileText, label: 'Reports & Export', section: 'revenue' },
   { to: '/calendar', icon: CalendarDays, label: 'Calendar View', section: 'management' },
   { to: '/notifications', icon: Bell, label: 'Notifications', section: 'overview' },
+  { to: '/revenue-war-room', icon: Zap, label: 'Revenue War Room', section: 'intelligence' },
+  { to: '/group-booking', icon: Users, label: 'Group Booking Optimizer', section: 'intelligence' },
+  { to: '/guest-ltv', icon: Heart, label: 'Guest Lifetime Value', section: 'intelligence' },
+  { to: '/guest-segmentation', icon: Target, label: 'Guest Segmentation', section: 'intelligence' },
+  { to: '/ai-history', icon: History, label: 'AI History', section: 'intelligence' },
 ];
 
 const sections = {
@@ -98,7 +107,28 @@ export default function Sidebar() {
             ))}
           </div>
         ))}
-      </nav>
+      
+        {/* // === Batch 04 Gaps & Frontend Mounts === */}
+        <div style={{ borderTop: '1px solid #eee', marginTop: '0.5rem', paddingTop: '0.5rem' }}>
+        <a href="/cf-agentic-revenue-manager-continuously-opt" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Agentic revenue manager continuously opt</a>
+        <a href="/cf-guest-lifecycle-ai-predicting-ltv-and" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Guest lifecycle AI predicting LTV and re</a>
+        <a href="/cf-dynamic-packaging-generating-room-spa-di" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Dynamic packaging generating room + spa </a>
+        <a href="/cf-occupancy-smoothing-recommending-group-e" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Occupancy smoothing recommending group e</a>
+        <a href="/cf-reputation-review-response-monitoring-ot" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Reputation + review response monitoring </a>
+        <a href="/cf-labor-optimizer-extending-laboropsjs-wit" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>Labor optimizer extending laborOps</a>
+        <a href="/gap-no-dynamic-pricing-optimizer-endpoint-ru" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No /dynamic-pricing-optimizer endpoint (</a>
+        <a href="/gap-no-demand-forecaster" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No demand forecaster</a>
+        <a href="/gap-no-guest-segmentation-ai" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No guest segmentation AI</a>
+        <a href="/gap-no-review-sentiment-analyzer" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No review sentiment analyzer</a>
+        <a href="/gap-no-competitor-rate-ai-recommender" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No competitor-rate AI recommender</a>
+        <a href="/gap-no-upsell-recommendation-engine" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No upsell recommendation engine</a>
+        <a href="/gap-no-loyalty-program-management" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No loyalty program management</a>
+        <a href="/gap-no-real-time-websocket-booking-board" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No real-time WebSocket booking board</a>
+        <a href="/gap-no-webhook-surface-for-ota-event" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No webhook surface for OTA event ingesti</a>
+        <a href="/gap-no-file-upload-for-guest-documents" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No file upload for guest documents</a>
+        <a href="/gap-no-multi-property-fleet-management" style={{ display: "block", padding: "0.4rem 0.6rem", fontSize: "0.85rem" }}>No multi-property fleet management</a>
+        </div>
+</nav>
 
       <div className="sidebar-footer">
         <div className="sidebar-user">

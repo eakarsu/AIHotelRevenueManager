@@ -33,13 +33,19 @@ export default function RoomsPage() {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
 
-  const fetchRooms = useCallback(async () => {
+  const fetchRooms = useCallback(async (page = 1) => {
     try {
       setLoading(true);
       setError('');
-      const data = await api.getRooms();
-      setRooms(Array.isArray(data) ? data : data.data || []);
+      const data = await api.getRooms(page, 20);
+      if (data && data.data && data.pagination) {
+        setRooms(data.data);
+        setPagination(data.pagination);
+      } else {
+        setRooms(Array.isArray(data) ? data : data.data || []);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -97,7 +103,7 @@ export default function RoomsPage() {
       };
       await api.createRoom(payload);
       setShowCreate(false);
-      fetchRooms();
+      fetchRooms(pagination.page);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -121,7 +127,7 @@ export default function RoomsPage() {
       await api.updateRoom(selected._id || selected.id, payload);
       setSelected(null);
       setEditing(false);
-      fetchRooms();
+      fetchRooms(pagination.page);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -135,7 +141,7 @@ export default function RoomsPage() {
       setSaving(true);
       await api.deleteRoom(selected._id || selected.id);
       setSelected(null);
-      fetchRooms();
+      fetchRooms(pagination.page);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -240,6 +246,20 @@ export default function RoomsPage() {
               ))}
             </tbody>
           </table>
+          {pagination.totalPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderTop: '1px solid var(--border)', fontSize: 13, color: 'var(--text-muted)' }}>
+              <span>Showing {((pagination.page - 1) * pagination.limit) + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}</span>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: 13 }} disabled={pagination.page === 1} onClick={() => fetchRooms(pagination.page - 1)}>
+                  &larr; Prev
+                </button>
+                <span style={{ fontWeight: 600 }}>Page {pagination.page} of {pagination.totalPages}</span>
+                <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: 13 }} disabled={pagination.page === pagination.totalPages} onClick={() => fetchRooms(pagination.page + 1)}>
+                  Next &rarr;
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

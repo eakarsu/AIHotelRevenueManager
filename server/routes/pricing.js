@@ -97,8 +97,34 @@ router.post('/ai-analyze', async (req, res) => {
       return res.status(400).json({ error: 'Room data is required for AI analysis.' });
     }
 
-    const analysis = await analyzeRoomPricing(roomData);
-    res.json({ success: true, analysis });
+    const userId = req.user?.id;
+    const analysis = await analyzeRoomPricing(roomData, userId);
+
+    // Auto-apply dynamic pricing if AI returns recommended_rate
+    const rate = analysis.recommended_rate || analysis.recommended_price;
+    let autoCreatedRule = null;
+    if (rate && typeof rate === 'number' && rate > 0) {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+        const insertRes = await pool.query(
+          `INSERT INTO pricing_rules (room_type, base_price, min_price, max_price, season, day_of_week, occupancy_threshold, adjustment_percent, is_active, notes)
+           VALUES ($1, $2, $3, $4, 'ai_dynamic', 'all', 0, 0, true, $5) RETURNING *`,
+          [
+            roomData.room_type || roomData.type || 'Standard',
+            rate,
+            Math.round(rate * 0.8),
+            Math.round(rate * 1.3),
+            `AI dynamic pricing — valid ${today} to ${tomorrow}`,
+          ]
+        );
+        autoCreatedRule = insertRes.rows[0];
+      } catch (e) {
+        console.error('Auto pricing rule creation failed:', e.message);
+      }
+    }
+
+    res.json({ success: true, analysis, _cached: analysis._cached || false, auto_pricing_rule: autoCreatedRule });
   } catch (err) {
     console.error('AI pricing analysis error:', err);
     res.status(500).json({ error: 'AI analysis failed. ' + err.message });

@@ -39,12 +39,18 @@ export default function GuestsPage() {
 
   const [aiResult, setAiResult] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
+  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
 
-  const fetchGuests = useCallback(async () => {
+  const fetchGuests = useCallback(async (page = 1) => {
     try {
       setLoading(true);
-      const data = await api.getGuests();
-      setGuests(Array.isArray(data) ? data : data.data || []);
+      const data = await api.getGuests(page, 20);
+      if (data && data.data && data.pagination) {
+        setGuests(data.data);
+        setPagination(data.pagination);
+      } else {
+        setGuests(Array.isArray(data) ? data : data.data || []);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -100,7 +106,7 @@ export default function GuestsPage() {
       await api.deleteGuest(selectedGuest._id || selectedGuest.id);
       setShowDetailModal(false);
       setSelectedGuest(null);
-      fetchGuests();
+      fetchGuests(pagination.page);
     } catch (err) {
       alert(err.message);
     }
@@ -111,7 +117,6 @@ export default function GuestsPage() {
     setSaving(true);
     try {
       const payload = { ...formData, total_stays: Number(formData.total_stays) };
-      // Parse preferences
       if (typeof payload.preferences === 'string' && payload.preferences.trim()) {
         try {
           payload.preferences = JSON.parse(payload.preferences);
@@ -125,7 +130,7 @@ export default function GuestsPage() {
         await api.createGuest(payload);
       }
       setShowFormModal(false);
-      fetchGuests();
+      fetchGuests(pagination.page);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -189,40 +194,52 @@ export default function GuestsPage() {
         </button>
       </div>
 
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Nationality</th>
-            <th>VIP Level</th>
-            <th>Total Stays</th>
-          </tr>
-        </thead>
-        <tbody>
-          {guests.length === 0 ? (
+      <div className="table-container">
+        <table className="data-table">
+          <thead>
             <tr>
-              <td colSpan="6" style={{ textAlign: 'center' }}>No guests found</td>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Nationality</th>
+              <th>VIP Level</th>
+              <th>Total Stays</th>
             </tr>
-          ) : (
-            guests.map((guest) => (
-              <tr key={guest._id || guest.id} onClick={() => openDetail(guest)} style={{ cursor: 'pointer' }}>
-                <td>{guest.name}</td>
-                <td>{guest.email}</td>
-                <td>{guest.phone || '-'}</td>
-                <td>{guest.nationality || '-'}</td>
-                <td>
-                  <span className={`badge badge-${vipBadgeColor[guest.vip_level] || 'default'}`}>
-                    {guest.vip_level || 'Bronze'}
-                  </span>
-                </td>
-                <td>{guest.total_stays || 0}</td>
+          </thead>
+          <tbody>
+            {guests.length === 0 ? (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center' }}>No guests found</td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              guests.map((guest) => (
+                <tr key={guest._id || guest.id} onClick={() => openDetail(guest)} style={{ cursor: 'pointer' }}>
+                  <td>{guest.name}</td>
+                  <td>{guest.email}</td>
+                  <td>{guest.phone || '-'}</td>
+                  <td>{guest.nationality || '-'}</td>
+                  <td>
+                    <span className={`badge badge-${vipBadgeColor[guest.vip_level] || 'default'}`}>
+                      {guest.vip_level || 'Bronze'}
+                    </span>
+                  </td>
+                  <td>{guest.total_stays || 0}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+        {pagination.totalPages > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderTop: '1px solid var(--border)', fontSize: 13, color: 'var(--text-muted)' }}>
+            <span>Showing {((pagination.page - 1) * pagination.limit) + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}</span>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: 13 }} disabled={pagination.page === 1} onClick={() => fetchGuests(pagination.page - 1)}>&larr; Prev</button>
+              <span style={{ fontWeight: 600 }}>Page {pagination.page} of {pagination.totalPages}</span>
+              <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: 13 }} disabled={pagination.page === pagination.totalPages} onClick={() => fetchGuests(pagination.page + 1)}>Next &rarr;</button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Detail Modal */}
       {showDetailModal && selectedGuest && (

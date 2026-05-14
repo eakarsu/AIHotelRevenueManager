@@ -38,7 +38,7 @@ export const register = (userData) =>
 export const getMe = () => request('/auth/me');
 
 // Rooms
-export const getRooms = () => request('/rooms');
+export const getRooms = (page = 1, limit = 20) => request(`/rooms?page=${page}&limit=${limit}`);
 export const getRoom = (id) => request(`/rooms/${id}`);
 export const createRoom = (data) =>
   request('/rooms', { method: 'POST', body: JSON.stringify(data) });
@@ -72,7 +72,7 @@ export const aiOptimizeChannels = (data) =>
   request('/channels/ai-optimize', { method: 'POST', body: JSON.stringify(data) });
 
 // Guests
-export const getGuests = () => request('/guests');
+export const getGuests = (page = 1, limit = 20) => request(`/guests?page=${page}&limit=${limit}`);
 export const getGuest = (id) => request(`/guests/${id}`);
 export const createGuest = (data) =>
   request('/guests', { method: 'POST', body: JSON.stringify(data) });
@@ -106,7 +106,7 @@ export const aiRecommendUpsells = (data) =>
   request('/upsells/ai-recommend', { method: 'POST', body: JSON.stringify(data) });
 
 // Reservations
-export const getReservations = () => request('/reservations');
+export const getReservations = (page = 1, limit = 20) => request(`/reservations?page=${page}&limit=${limit}`);
 export const getReservation = (id) => request(`/reservations/${id}`);
 export const createReservation = (data) =>
   request('/reservations', { method: 'POST', body: JSON.stringify(data) });
@@ -201,6 +201,12 @@ export const deleteInvoice = (id) =>
 // Reports
 export const getReport = (type, queryString) =>
   request(`/reports/${type}${queryString ? '?' + queryString : ''}`);
+
+// AI War Room & History
+export const runRevenueWarRoom = () =>
+  request('/ai/revenue-war-room', { method: 'POST' });
+export const getAIHistory = (limit = 20) =>
+  request(`/ai/history?limit=${limit}`);
 
 // Notifications
 export const getNotifications = () => request('/notifications');

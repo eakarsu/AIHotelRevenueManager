@@ -1,13 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const { personalizeGuestExperience } = require('../services/openrouter');
+const { personalizeGuestExperience, analyzeGuestSegmentation } = require('../services/openrouter');
 
 // GET /api/guests
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM guests ORDER BY created_at DESC');
-    res.json(result.rows);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const offset = (page - 1) * limit;
+    const countResult = await pool.query('SELECT COUNT(*) FROM guests');
+    const total = parseInt(countResult.rows[0].count);
+    const result = await pool.query('SELECT * FROM guests ORDER BY created_at DESC LIMIT $1 OFFSET $2', [limit, offset]);
+    res.json({ data: result.rows, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
   } catch (err) {
     console.error('Get guests error:', err);
     res.status(500).json({ error: 'Internal server error.' });
@@ -102,6 +107,21 @@ router.post('/:id/ai-personalize', async (req, res) => {
   } catch (err) {
     console.error('AI personalization error:', err);
     res.status(500).json({ error: 'AI personalization failed. ' + err.message });
+  }
+});
+
+// POST /api/guests/ai-segment — guest base segmentation (cohort-level)
+router.post('/ai-segment', async (req, res) => {
+  try {
+    const { limit } = req.body || {};
+    const cap = Math.min(500, Math.max(20, parseInt(limit) || 200));
+    const result = await pool.query('SELECT * FROM guests ORDER BY id ASC LIMIT $1', [cap]);
+    if (result.rows.length === 0) return res.status(400).json({ error: 'No guests available to segment.' });
+    const segmentation = await analyzeGuestSegmentation(result.rows);
+    res.json({ success: true, guests_analyzed: result.rows.length, segmentation });
+  } catch (err) {
+    console.error('AI guest segmentation error:', err);
+    res.status(500).json({ error: 'AI segmentation failed. ' + err.message });
   }
 });
 

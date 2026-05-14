@@ -38,13 +38,19 @@ export default function ReservationsPage() {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
 
-  const fetchReservations = useCallback(async () => {
+  const fetchReservations = useCallback(async (page = 1) => {
     try {
       setLoading(true);
       setError('');
-      const data = await api.getReservations();
-      setReservations(Array.isArray(data) ? data : data.data || []);
+      const data = await api.getReservations(page, 20);
+      if (data && data.data && data.pagination) {
+        setReservations(data.data);
+        setPagination(data.pagination);
+      } else {
+        setReservations(Array.isArray(data) ? data : data.data || []);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -101,7 +107,7 @@ export default function ReservationsPage() {
       };
       await api.createReservation(payload);
       setShowCreate(false);
-      fetchReservations();
+      fetchReservations(pagination.page);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -121,7 +127,7 @@ export default function ReservationsPage() {
       await api.updateReservation(selected._id || selected.id, payload);
       setSelected(null);
       setEditing(false);
-      fetchReservations();
+      fetchReservations(pagination.page);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -135,7 +141,7 @@ export default function ReservationsPage() {
       setSaving(true);
       await api.deleteReservation(selected._id || selected.id);
       setSelected(null);
-      fetchReservations();
+      fetchReservations(pagination.page);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -269,6 +275,16 @@ export default function ReservationsPage() {
               ))}
             </tbody>
           </table>
+          {pagination.totalPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderTop: '1px solid var(--border)', fontSize: 13, color: 'var(--text-muted)' }}>
+              <span>Showing {((pagination.page - 1) * pagination.limit) + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}</span>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: 13 }} disabled={pagination.page === 1} onClick={() => fetchReservations(pagination.page - 1)}>&larr; Prev</button>
+                <span style={{ fontWeight: 600 }}>Page {pagination.page} of {pagination.totalPages}</span>
+                <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: 13 }} disabled={pagination.page === pagination.totalPages} onClick={() => fetchReservations(pagination.page + 1)}>Next &rarr;</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
