@@ -46,6 +46,9 @@ import GapNoWebhookSurfaceForOtaEvent from './pages/GapNoWebhookSurfaceForOtaEve
 import GapNoFileUploadForGuestDocuments from './pages/GapNoFileUploadForGuestDocuments';
 import GapNoMultiPropertyFleetManagement from './pages/GapNoMultiPropertyFleetManagement';
 
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
 
@@ -86,6 +89,9 @@ function AppRoutes() {
 
   return (
     <Routes>
+        <Route path="/codex/custom-viz" element={<ProtectedRoute><CodexCustomVizFeature /></ProtectedRoute>} />
+        <Route path="/codex/operations" element={<ProtectedRoute><CodexOperationsFeature /></ProtectedRoute>} />
+
       <Route
         path="/login"
         element={user ? <Navigate to="/" replace /> : <LoginPage />}

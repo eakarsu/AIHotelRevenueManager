@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
@@ -62,7 +62,7 @@ app.use(express.json());
 const aiRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
-  keyGenerator: (req) => (req.user?.id ? `user_${req.user.id}` : req.ip),
+  keyGenerator: (req, res) => (req.user?.id ? `user_${req.user.id}` : ipKeyGenerator(req, res)),
   handler: (req, res) => {
     res.status(429).json({ error: 'Too many AI requests. Limit is 20 per hour.' });
   },
