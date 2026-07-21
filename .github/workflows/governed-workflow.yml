@@ -1,0 +1,13 @@
+name: governed-workflow
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node --test server/test/*.test.js
+      - run: node --check server/domain/revenuePolicy.js && node --check server/routes/governedRevenue.js
+      - run: bash -n start.sh
+      - run: git diff --check HEAD

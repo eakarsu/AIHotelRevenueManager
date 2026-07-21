@@ -9,6 +9,8 @@ const pool = new Pool({
 });
 
 async function seed() {
+  if (process.env.ALLOW_DESTRUCTIVE_DEMO_SEED !== 'true' || process.env.NODE_ENV === 'production') throw new Error('destructive demo seed is disabled');
+  if (!process.env.DEMO_ADMIN_PASSWORD) throw new Error('DEMO_ADMIN_PASSWORD is required for demo seeding');
   const client = await pool.connect();
 
   try {
@@ -291,7 +293,7 @@ async function seed() {
     `);
 
     console.log('Seeding users...');
-    const passwordHash = await bcrypt.hash('password123', 10);
+    const passwordHash = await bcrypt.hash(process.env.DEMO_ADMIN_PASSWORD, 10);
     await client.query(`
       INSERT INTO users (name, email, password_hash, role) VALUES
       ('Admin User', 'admin@hotel.com', $1, 'admin'),
@@ -636,7 +638,7 @@ async function seed() {
     `);
 
     console.log('Seed completed successfully!');
-    console.log('Default login: admin@hotel.com / password123');
+    console.log('Demo users created; password was supplied through DEMO_ADMIN_PASSWORD.');
   } catch (err) {
     console.error('Seed error:', err);
     throw err;

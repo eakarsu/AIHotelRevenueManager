@@ -100,6 +100,7 @@ app.use('/api/integrations', integrationsRoutes);
 app.use('/api/labor-ops', laborOpsRoutes);
 app.use('/api/dynamic-pricing-ai', require('./routes/dynamicPricingAI'));
 app.use('/api/review-response-ai', require('./routes/reviewResponseAI'));
+app.use('/api/governed-revenue', require('./routes/governedRevenue'));
 
 // Health check
 app.get('/health', (req, res) => {

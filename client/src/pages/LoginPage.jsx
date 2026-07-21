@@ -25,12 +25,6 @@ export default function LoginPage() {
     }
   };
 
-  const fillDemo = () => {
-    setEmail('admin@hotel.com');
-    setPassword('password123');
-    setError('');
-  };
-
   return (
     <div className="login-page">
       <div className="login-card">
@@ -85,13 +79,6 @@ export default function LoginPage() {
           <span>or</span>
         </div>
 
-        <button
-          type="button"
-          className="btn btn-demo btn-block"
-          onClick={fillDemo}
-        >
-          Auto-fill Demo Credentials
-        </button>
       </div>
     </div>
   );

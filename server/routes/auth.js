@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role, name: user.name },
+      { id: user.id, email: user.email, role: user.role, name: user.name, tenant_id: user.tenant_id },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -51,7 +51,7 @@ router.post('/login', async (req, res) => {
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ error: 'Name, email, and password are required.' });
@@ -67,12 +67,12 @@ router.post('/register', async (req, res) => {
 
     const result = await pool.query(
       'INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role, created_at',
-      [name, email, password_hash, role || 'staff']
+      [name, email, password_hash, 'staff']
     );
 
     const user = result.rows[0];
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role, name: user.name },
+      { id: user.id, email: user.email, role: user.role, name: user.name, tenant_id: user.tenant_id },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
