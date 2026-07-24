@@ -27,6 +27,7 @@ pool.query(`
 `).catch(() => {});
 
 const DEFAULT_MODEL = 'anthropic/claude-3-5-sonnet-20241022';
+const OPENROUTER_CHAT_URL = `${(process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/$/, '')}/chat/completions`;
 
 async function checkCache(cacheKey) {
   try {
@@ -71,7 +72,7 @@ async function callOpenRouter(prompt, cacheKey, toolName, userId) {
 
   const model = process.env.OPENROUTER_MODEL || DEFAULT_MODEL;
 
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  const response = await fetch(OPENROUTER_CHAT_URL, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -366,7 +367,7 @@ Respond ONLY with a JSON object (no markdown):
   "confidence_score": <number 0-1>
 }`;
 
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  const response = await fetch(OPENROUTER_CHAT_URL, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -424,7 +425,7 @@ Respond ONLY with a JSON object (no markdown):
   "negotiation_leverage_points": ["<point1>", "<point2>"]
 }`;
 
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  const response = await fetch(OPENROUTER_CHAT_URL, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }], temperature: 0.7 }),
@@ -470,7 +471,7 @@ Respond ONLY with a JSON object (no markdown):
   "personalization_opportunities": ["<opportunity1>", "<opportunity2>"]
 }`;
 
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  const response = await fetch(OPENROUTER_CHAT_URL, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }], temperature: 0.7 }),

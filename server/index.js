@@ -62,7 +62,7 @@ app.use(express.json());
 const aiRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
-  keyGenerator: (req, res) => (req.user?.id ? `user_${req.user.id}` : ipKeyGenerator(req, res)),
+  keyGenerator: (req) => (req.user?.id ? `user_${req.user.id}` : ipKeyGenerator(req.ip)),
   handler: (req, res) => {
     res.status(429).json({ error: 'Too many AI requests. Limit is 20 per hour.' });
   },

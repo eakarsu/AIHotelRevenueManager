@@ -296,7 +296,7 @@ async function seed() {
     const passwordHash = await bcrypt.hash(process.env.DEMO_ADMIN_PASSWORD, 10);
     await client.query(`
       INSERT INTO users (name, email, password_hash, role) VALUES
-      ('Admin User', 'admin@hotel.com', $1, 'admin'),
+      ('Admin User', $2, $1, 'admin'),
       ('Sarah Johnson', 'sarah@hotel.com', $1, 'manager'),
       ('Mike Chen', 'mike@hotel.com', $1, 'staff'),
       ('Emily Davis', 'emily@hotel.com', $1, 'staff'),
@@ -311,7 +311,7 @@ async function seed() {
       ('Chris Robinson', 'chris@hotel.com', $1, 'staff'),
       ('Nicole Harris', 'nicole@hotel.com', $1, 'receptionist'),
       ('Kevin Clark', 'kevin@hotel.com', $1, 'staff')
-    `, [passwordHash]);
+    `, [passwordHash, process.env.DEMO_ADMIN_EMAIL || 'admin@hotel.com']);
 
     console.log('Seeding rooms...');
     await client.query(`
