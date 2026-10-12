@@ -3,6 +3,7 @@ import { BarChart3, TrendingUp, Plus, Trash2, X, DollarSign } from 'lucide-react
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import Modal from '../components/Modal';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const emptyForm = {
   date: '',
@@ -35,7 +36,7 @@ export default function AnalyticsPage() {
         api.getAnalytics(),
         api.getAnalyticsSummary().catch(() => null),
       ]);
-      setRecords(Array.isArray(analyticsData) ? analyticsData : analyticsData.data || []);
+      setRecords(recordRows(analyticsData));
       if (summaryData) {
         setSummary(summaryData.summary || summaryData.data || summaryData);
       }

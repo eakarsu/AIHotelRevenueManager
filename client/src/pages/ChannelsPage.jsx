@@ -3,6 +3,7 @@ import { Share2, Globe, Brain, Plus, Edit, Trash2, X } from 'lucide-react';
 import Modal from '../components/Modal';
 import AIResultDisplay from '../components/AIResultDisplay';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const emptyForm = {
   name: '',
@@ -33,7 +34,7 @@ export default function ChannelsPage() {
       setLoading(true);
       setError('');
       const data = await api.getChannels();
-      setChannels(Array.isArray(data) ? data : data.data || []);
+      setChannels(recordRows(data));
     } catch (err) {
       setError(err.message);
     } finally {

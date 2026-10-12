@@ -107,18 +107,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found.' });
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
-  res.status(500).json({ error: 'Internal server error.' });
-});
-
-
+// Batch 04 gap AI routes — registered before the 404 catch-all so they are reachable.
 app.use('/api/gap-no-dynamic-pricing-optimizer-endpoint-ru', route_gap_no_dynamic_pricing_optimizer_endpoint_ru);
 app.use('/api/gap-no-demand-forecaster', route_gap_no_demand_forecaster);
 app.use('/api/gap-no-guest-segmentation-ai', route_gap_no_guest_segmentation_ai);
@@ -130,6 +119,25 @@ app.use('/api/gap-no-real-time-websocket-booking-board', route_gap_no_real_time_
 app.use('/api/gap-no-webhook-surface-for-ota-event', route_gap_no_webhook_surface_for_ota_event);
 app.use('/api/gap-no-file-upload-for-guest-documents', route_gap_no_file_upload_for_guest_documents);
 app.use('/api/gap-no-multi-property-fleet-management', route_gap_no_multi_property_fleet_management);
+
+// Advisory AI reports only; native execution and approval routes stay unchanged.
+const aiWorkspaceSupport = require("./aiWorkspaceAdapters.cjs");
+const aiWorkspaceDatabase = require("./db.js");
+app.use('/api/report-workspace', require("./aiWorkspace.cjs").createAIWorkspaceRouter({
+  pool: aiWorkspaceDatabase, authenticateToken: require("./middleware/auth.js"),
+  aiRateLimiter: aiWorkspaceSupport.createWorkspaceLimiter(), features: require("./aiWorkspaceFeatures.json"),
+}));
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found.' });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error.' });
+});
 
 app.listen(PORT, () => {
   console.log(`Hotel Revenue Manager API running on port ${PORT}`);

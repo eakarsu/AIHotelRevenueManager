@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Bell, Trash2, Check, CheckCheck, RefreshCw, AlertTriangle, Info, AlertCircle } from 'lucide-react';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const typeIcons = {
   info: Info,
@@ -34,7 +35,7 @@ export default function NotificationsPage() {
       setLoading(true);
       setError('');
       const data = await api.getNotifications();
-      setNotifications(Array.isArray(data) ? data : data.data || []);
+      setNotifications(recordRows(data));
     } catch (err) {
       setError(err.message);
     } finally {

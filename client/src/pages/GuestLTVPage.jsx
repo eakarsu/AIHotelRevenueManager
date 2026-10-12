@@ -1,5 +1,8 @@
+
+import FullAIExamples, { useFullAIExamples } from "../components/FullAIExamples.jsx";
 import { useState } from 'react';
 import { Heart, AlertCircle, TrendingUp } from 'lucide-react';
+import FormattedAIReport from '../components/FormattedAIReport';
 
 function Stat({ label, value, color }) {
   return (
@@ -27,6 +30,8 @@ function TierBadge({ tier }) {
 }
 
 export default function GuestLTVPage() {
+  const fullAIExamples = useFullAIExamples();
+
   const [guestId, setGuestId] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -66,13 +71,13 @@ export default function GuestLTVPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 12, marginBottom: 28 }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 12, marginBottom: 28 }} data-full-ai-workspace="GuestLTVPage"><FullAIExamples controller={fullAIExamples} disabled={Boolean(loading)} />
         <input
           type="number"
           value={guestId}
           onChange={(e) => setGuestId(e.target.value)}
           placeholder="Guest ID (leave blank for general analysis)"
-          style={{ flex: 1, padding: '10px 14px', border: '1px solid #E2E8F0', borderRadius: 8, fontSize: 14 }}
+          style={{ flex: 1, padding: '10px 14px', border: '1px solid #E2E8F0', borderRadius: 8, fontSize: 14 }} data-full-ai-field={fullAIExamples.bind({ current: guestId, change: (e) => setGuestId(e.target.value), label: "guestId", manual: false, json: false, sample: '' }, "p1-2782", undefined)}
         />
         <button type="submit" disabled={loading} style={{
           padding: '10px 24px', borderRadius: 8, border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
@@ -145,6 +150,7 @@ export default function GuestLTVPage() {
               </div>
             )}
           </div>
+          <FormattedAIReport response={result} title="Complete guest lifetime value analysis" />
         </div>
       )}
 

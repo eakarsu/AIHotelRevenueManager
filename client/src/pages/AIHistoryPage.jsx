@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { History, RefreshCw, Brain } from 'lucide-react';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
+import FormattedAIReport from '../components/FormattedAIReport';
 
 const toolLabels = {
   analyzeRoomPricing: 'Pricing Analysis',
@@ -35,7 +37,7 @@ export default function AIHistoryPage() {
     setError('');
     try {
       const data = await api.getAIHistory(30);
-      setHistory(data.data || []);
+      setHistory(recordRows(data));
     } catch (err) {
       setError('Failed to load AI history: ' + err.message);
     } finally {
@@ -111,12 +113,9 @@ export default function AIHistoryPage() {
                   </div>
                   <span style={{ color: '#64748B', fontSize: 18, lineHeight: 1 }}>{isExpanded ? '▲' : '▼'}</span>
                 </div>
-                {isExpanded && entry.result_preview && (
+                {isExpanded && entry.result !== null && entry.result !== undefined && (
                   <div style={{ padding: '0 18px 14px', borderTop: '1px solid #F1F5F9' }}>
-                    <p style={{ fontSize: 12, color: '#64748B', marginBottom: 6, marginTop: 10 }}>Result Preview (first 500 chars):</p>
-                    <pre style={{ margin: 0, fontSize: 12, color: '#334155', backgroundColor: '#F8FAFC', borderRadius: 6, padding: '10px 12px', whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxHeight: 200, overflowY: 'auto' }}>
-                      {entry.result_preview}
-                    </pre>
+                    <FormattedAIReport response={entry.result} title={label} model={entry.model} />
                   </div>
                 )}
               </div>

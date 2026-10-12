@@ -1,17 +1,19 @@
+import NativeAIControls from "../components/NativeAIControls";
+import useNativeAIRequest from "../components/useNativeAIRequest";
+import FormattedAIReport from "../components/FormattedAIReport";
 import { useState } from 'react';
 import { Sparkles, Target, AlertTriangle } from 'lucide-react';
-import AIResultDisplay from '../components/AIResultDisplay';
 
-async function postGuestSegmentation(body) {
+async function postGuestSegmentation(body, nativeRequestOptions = {}) {
   const token = localStorage.getItem('token');
-  const res = await fetch('/api/guests/ai-segment', {
+  const res = await fetch('/api/guests/ai-segment', { ...({
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
     },
     body: JSON.stringify(body || {}),
-  });
+  }), ...(nativeRequestOptions) });
   if (res.status === 401) {
     localStorage.removeItem('token');
     window.location.href = '/login';
@@ -23,6 +25,8 @@ async function postGuestSegmentation(body) {
 }
 
 export default function GuestSegmentationPage() {
+  const nativeAIRequest = useNativeAIRequest();
+
   const [limit, setLimit] = useState(200);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -36,7 +40,7 @@ export default function GuestSegmentationPage() {
     try {
       const body = {};
       if (limit) body.limit = Number(limit);
-      const data = await postGuestSegmentation(body);
+      const data = await nativeAIRequest.run((signal) => postGuestSegmentation(body, { signal }));
       setResult(data);
     } catch (err) {
       setError(err.message || 'Request failed');
@@ -45,10 +49,8 @@ export default function GuestSegmentationPage() {
     }
   };
 
-  const segmentationData = result?.data || result?.segmentation || result;
-
   return (
-    <div className="page guest-segmentation-page">
+    <NativeAIControls busy={nativeAIRequest.busy} onCancel={nativeAIRequest.cancel} context="Hotel Revenue Manager"><div className="page guest-segmentation-page">
       <div className="page-header">
         <div>
           <h1>
@@ -63,7 +65,7 @@ export default function GuestSegmentationPage() {
         <form onSubmit={submit} style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'flex-end' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <label style={{ fontSize: 13, fontWeight: 600 }}>Guest Sample Size</label>
-            <input
+            <input data-ai-field="limit"
               type="number"
               min={10}
               max={500}
@@ -106,16 +108,9 @@ export default function GuestSegmentationPage() {
       {!loading && result && (
         <div className="card" style={{ marginTop: 16 }}>
           <h2 style={{ marginTop: 0 }}>Segmentation Result</h2>
-          {/* Try to render structured data via AIResultDisplay; otherwise dump JSON */}
-          {segmentationData && typeof segmentationData === 'object' ? (
-            <AIResultDisplay result={segmentationData} />
-          ) : (
-            <pre style={{ background: '#0f172a', color: '#e2e8f0', padding: 14, borderRadius: 8, overflow: 'auto', fontSize: 12 }}>
-              {JSON.stringify(result, null, 2)}
-            </pre>
-          )}
+          <FormattedAIReport response={result} title="Guest segmentation" />
         </div>
       )}
-    </div>
+    </div></NativeAIControls>
   );
 }

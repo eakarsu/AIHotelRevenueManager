@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Wrench, AlertCircle, Plus, Edit, Trash2, X } from 'lucide-react';
 import Modal from '../components/Modal';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const CATEGORIES = ['Plumbing', 'Electrical', 'HVAC', 'Furniture', 'Appliance', 'Structural', 'Cosmetic', 'Safety'];
 const PRIORITIES = ['Critical', 'High', 'Medium', 'Low'];
@@ -53,7 +54,7 @@ export default function MaintenancePage() {
       setLoading(true);
       setError('');
       const data = await api.getMaintenanceRequests();
-      setRequests(Array.isArray(data) ? data : data.data || []);
+      setRequests(recordRows(data));
     } catch (err) {
       setError(err.message);
     } finally {

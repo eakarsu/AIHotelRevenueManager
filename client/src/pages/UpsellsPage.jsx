@@ -3,6 +3,7 @@ import { Gift, TrendingUp, Brain, Plus, Edit, Trash2, X } from 'lucide-react';
 import Modal from '../components/Modal';
 import AIResultDisplay from '../components/AIResultDisplay';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const CATEGORIES = ['Dining', 'Spa', 'Room Upgrade', 'Experience', 'Service'];
 
@@ -45,7 +46,7 @@ export default function UpsellsPage() {
     try {
       setLoading(true);
       const data = await api.getUpsells();
-      setUpsells(Array.isArray(data) ? data : data.data || []);
+      setUpsells(recordRows(data));
     } catch (err) {
       setError(err.message);
     } finally {

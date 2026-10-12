@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Tag, Percent, Plus, Edit, Trash2, X } from 'lucide-react';
 import Modal from '../components/Modal';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const TYPES = ['Seasonal', 'Weekend', 'Holiday', 'Early Bird', 'Last Minute', 'Package', 'Loyalty'];
 
@@ -46,7 +47,7 @@ export default function PromotionsPage() {
       setLoading(true);
       setError('');
       const data = await api.getPromotions();
-      setPromotions(Array.isArray(data) ? data : data.data || []);
+      setPromotions(recordRows(data));
     } catch (err) {
       setError(err.message);
     } finally {

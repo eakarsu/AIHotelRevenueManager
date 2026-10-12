@@ -3,6 +3,7 @@ import { Users, UserPlus, Brain, Edit, Trash2, X, Star } from 'lucide-react';
 import Modal from '../components/Modal';
 import AIResultDisplay from '../components/AIResultDisplay';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const VIP_LEVELS = ['Diamond', 'Platinum', 'Gold', 'Silver', 'Bronze'];
 
@@ -46,10 +47,10 @@ export default function GuestsPage() {
       setLoading(true);
       const data = await api.getGuests(page, 20);
       if (data && data.data && data.pagination) {
-        setGuests(data.data);
+        setGuests(recordRows(data));
         setPagination(data.pagination);
       } else {
-        setGuests(Array.isArray(data) ? data : data.data || []);
+        setGuests(recordRows(data));
       }
     } catch (err) {
       setError(err.message);

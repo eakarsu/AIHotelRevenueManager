@@ -45,7 +45,7 @@ router.get('/history', async (req, res) => {
 
     const limit = Math.min(50, parseInt(req.query.limit) || 20);
     const result = await pool.query(
-      `SELECT id, tool_name, model, user_id, created_at, LEFT(result, 500) as result_preview
+      `SELECT id, tool_name, model, user_id, created_at, result
        FROM ai_analyses ORDER BY created_at DESC LIMIT $1`,
       [limit]
     );

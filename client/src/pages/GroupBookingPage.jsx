@@ -1,6 +1,9 @@
+
+import FullAIExamples, { useFullAIExamples } from "../components/FullAIExamples.jsx";
 import { useState } from 'react';
 import { Users, TrendingUp, AlertCircle, CheckCircle, DollarSign } from 'lucide-react';
 import * as api from '../services/api';
+import FormattedAIReport from '../components/FormattedAIReport';
 
 function Badge({ value, greenIf, label }) {
   const isGood = value === greenIf;
@@ -16,6 +19,8 @@ function Badge({ value, greenIf, label }) {
 }
 
 export default function GroupBookingPage() {
+  const fullAIExamples = useFullAIExamples();
+
   const [form, setForm] = useState({
     group_size: '',
     event_type: 'corporate meeting',
@@ -86,15 +91,15 @@ export default function GroupBookingPage() {
         {/* Form */}
         <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #E2E8F0', padding: 24 }}>
           <h3 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', marginTop: 0, marginBottom: 20 }}>Group RFP Details</h3>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} data-full-ai-workspace="GroupBookingPage"><FullAIExamples controller={fullAIExamples} disabled={Boolean(loading)} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div>
                 <label style={labelStyle}>Group Size</label>
-                <input name="group_size" type="number" value={form.group_size} onChange={handleChange} placeholder="e.g. 80" style={inputStyle} required />
+                <input name="group_size" type="number" value={form.group_size} onChange={handleChange} placeholder="e.g. 80" style={inputStyle} required data-full-ai-field={fullAIExamples.bind({ current: form.group_size, change: handleChange, label: "form.group_size", manual: false, json: false, sample: '' }, "p1-3752", undefined)} />
               </div>
               <div>
                 <label style={labelStyle}>Event Type</label>
-                <select name="event_type" value={form.event_type} onChange={handleChange} style={inputStyle}>
+                <select name="event_type" value={form.event_type} onChange={handleChange} style={inputStyle} data-full-ai-field={fullAIExamples.bind({ current: form.event_type, change: handleChange, label: "form.event_type", manual: false, json: false, sample: 'corporate meeting' }, "p1-4010", undefined)}>
                   {['corporate meeting', 'wedding', 'conference', 'incentive trip', 'social event', 'sports group', 'tour group'].map(t => <option key={t}>{t}</option>)}
                 </select>
               </div>
@@ -102,30 +107,30 @@ export default function GroupBookingPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div>
                 <label style={labelStyle}>Check-in Date</label>
-                <input name="start_date" type="date" value={form.start_date} onChange={handleChange} style={inputStyle} />
+                <input name="start_date" type="date" value={form.start_date} onChange={handleChange} style={inputStyle} data-full-ai-field={fullAIExamples.bind({ current: form.start_date, change: handleChange, label: "form.start_date", manual: false, json: false, sample: '' }, "p1-4545", undefined)} />
               </div>
               <div>
                 <label style={labelStyle}>Check-out Date</label>
-                <input name="end_date" type="date" value={form.end_date} onChange={handleChange} style={inputStyle} />
+                <input name="end_date" type="date" value={form.end_date} onChange={handleChange} style={inputStyle} data-full-ai-field={fullAIExamples.bind({ current: form.end_date, change: handleChange, label: "form.end_date", manual: false, json: false, sample: '' }, "p1-4774", undefined)} />
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 16 }}>
               <div>
                 <label style={labelStyle}>Requested Rate/Night ($)</label>
-                <input name="requested_rate" type="number" value={form.requested_rate} onChange={handleChange} placeholder="150" style={inputStyle} />
+                <input name="requested_rate" type="number" value={form.requested_rate} onChange={handleChange} placeholder="150" style={inputStyle} data-full-ai-field={fullAIExamples.bind({ current: form.requested_rate, change: handleChange, label: "form.requested_rate", manual: false, json: false, sample: '' }, "p1-5137", undefined)} />
               </div>
               <div>
                 <label style={labelStyle}>F&B Spend ($)</label>
-                <input name="food_beverage_spend" type="number" value={form.food_beverage_spend} onChange={handleChange} placeholder="5000" style={inputStyle} />
+                <input name="food_beverage_spend" type="number" value={form.food_beverage_spend} onChange={handleChange} placeholder="5000" style={inputStyle} data-full-ai-field={fullAIExamples.bind({ current: form.food_beverage_spend, change: handleChange, label: "form.food_beverage_spend", manual: false, json: false, sample: '' }, "p1-5393", undefined)} />
               </div>
               <div>
                 <label style={labelStyle}>Ancillary Spend ($)</label>
-                <input name="ancillary_spend" type="number" value={form.ancillary_spend} onChange={handleChange} placeholder="2000" style={inputStyle} />
+                <input name="ancillary_spend" type="number" value={form.ancillary_spend} onChange={handleChange} placeholder="2000" style={inputStyle} data-full-ai-field={fullAIExamples.bind({ current: form.ancillary_spend, change: handleChange, label: "form.ancillary_spend", manual: false, json: false, sample: '' }, "p1-5666", undefined)} />
               </div>
             </div>
             <div style={{ marginBottom: 20 }}>
               <label style={labelStyle}>Notes / Special Requirements</label>
-              <textarea name="notes" value={form.notes} onChange={handleChange} placeholder="Any special requirements or context..." rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
+              <textarea name="notes" value={form.notes} onChange={handleChange} placeholder="Any special requirements or context..." rows={3} style={{ ...inputStyle, resize: 'vertical' }} data-full-ai-field={fullAIExamples.bind({ current: form.notes, change: handleChange, label: "form.notes", manual: false, json: false, sample: '' }, "p1-5982", undefined)} />
             </div>
             {error && (
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '10px 14px', background: '#FEF2F2', borderRadius: 8, marginBottom: 16, color: '#B91C1C', fontSize: 13 }}>
@@ -209,6 +214,7 @@ export default function GroupBookingPage() {
                   )}
                 </div>
               )}
+              <FormattedAIReport response={result} title="Complete group booking analysis" />
             </div>
           ) : (
             <div style={{ height: '100%', minHeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC', borderRadius: 12, border: '2px dashed #E2E8F0' }}>

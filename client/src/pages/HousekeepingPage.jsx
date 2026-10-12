@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Sparkles, Plus, Edit, Trash2, X, Clock } from 'lucide-react';
 import Modal from '../components/Modal';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const TASK_TYPES = ['Deep Clean', 'Standard Clean', 'Turnover', 'Inspection', 'Maintenance', 'Linen Change'];
 const PRIORITIES = ['Urgent', 'High', 'Medium', 'Low'];
@@ -49,7 +50,7 @@ export default function HousekeepingPage() {
     try {
       setLoading(true);
       const data = await api.getHousekeepingTasks();
-      setTasks(Array.isArray(data) ? data : data.data || []);
+      setTasks(recordRows(data));
     } catch (err) {
       setError(err.message);
     } finally {

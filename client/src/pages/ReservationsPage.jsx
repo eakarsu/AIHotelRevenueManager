@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Calendar, Plus, Edit, Trash2, X, CreditCard } from 'lucide-react';
 import Modal from '../components/Modal';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const ROOM_TYPES = ['Standard', 'Deluxe', 'Suite', 'Presidential', 'Penthouse'];
 const CHANNELS = ['Direct', 'Booking.com', 'Expedia', 'Hotels.com', 'Airbnb'];
@@ -46,10 +47,10 @@ export default function ReservationsPage() {
       setError('');
       const data = await api.getReservations(page, 20);
       if (data && data.data && data.pagination) {
-        setReservations(data.data);
+        setReservations(recordRows(data));
         setPagination(data.pagination);
       } else {
-        setReservations(Array.isArray(data) ? data : data.data || []);
+        setReservations(recordRows(data));
       }
     } catch (err) {
       setError(err.message);

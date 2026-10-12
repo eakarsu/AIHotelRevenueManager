@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Receipt, Plus, Edit, Trash2, Printer } from 'lucide-react';
 import Modal from '../components/Modal';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const PAYMENT_METHODS = ['Credit Card', 'Debit Card', 'Cash', 'Bank Transfer', 'Online Payment'];
 const PAYMENT_STATUSES = ['Pending', 'Paid', 'Partially Paid', 'Overdue', 'Refunded'];
@@ -48,7 +49,7 @@ export default function BillingPage() {
       setLoading(true);
       setError('');
       const data = await api.getInvoices();
-      setInvoices(Array.isArray(data) ? data : data.data || []);
+      setInvoices(recordRows(data));
     } catch (err) {
       setError(err.message);
     } finally {

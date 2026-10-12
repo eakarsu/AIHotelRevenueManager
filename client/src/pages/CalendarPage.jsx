@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const statusColors = {
   Confirmed: '#22c55e',
@@ -23,8 +24,8 @@ export default function CalendarPage() {
       setLoading(true);
       setError('');
       const [resData, roomData] = await Promise.all([api.getReservations(), api.getRooms()]);
-      setReservations(Array.isArray(resData) ? resData : resData.data || []);
-      setRooms(Array.isArray(roomData) ? roomData : roomData.data || []);
+      setReservations(recordRows(resData));
+      setRooms(recordRows(roomData));
     } catch (err) {
       setError(err.message);
     } finally {

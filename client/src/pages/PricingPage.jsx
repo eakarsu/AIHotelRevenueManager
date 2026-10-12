@@ -3,6 +3,7 @@ import { DollarSign, TrendingUp, Brain, Plus, Edit, Trash2, X } from 'lucide-rea
 import Modal from '../components/Modal';
 import AIResultDisplay from '../components/AIResultDisplay';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const SEASONS = ['Peak', 'High', 'Regular', 'Low', 'Off-Peak'];
 const DAYS = ['All', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Weekday', 'Weekend'];
@@ -38,7 +39,7 @@ export default function PricingPage() {
       setLoading(true);
       setError('');
       const data = await api.getPricingRules();
-      setRules(Array.isArray(data) ? data : data.data || []);
+      setRules(recordRows(data));
     } catch (err) {
       setError(err.message);
     } finally {

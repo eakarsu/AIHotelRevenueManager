@@ -3,6 +3,7 @@ import { TrendingUp, Brain, Plus, Trash2, X, Target } from 'lucide-react';
 import Modal from '../components/Modal';
 import AIResultDisplay from '../components/AIResultDisplay';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 import {
   LineChart,
   Line,
@@ -53,7 +54,7 @@ export default function ForecastingPage() {
       setLoading(true);
       setError('');
       const data = await api.getForecasts();
-      setForecasts(Array.isArray(data) ? data : data.data || []);
+      setForecasts(recordRows(data));
     } catch (err) {
       setError(err.message);
     } finally {

@@ -3,6 +3,7 @@ import { Building2, TrendingUp, Brain, Plus, Edit, Trash2, X, Star } from 'lucid
 import Modal from '../components/Modal';
 import AIResultDisplay from '../components/AIResultDisplay';
 import * as api from '../services/api';
+import { recordRows } from '../services/recordRows';
 
 const emptyForm = {
   name: '',
@@ -35,7 +36,7 @@ export default function CompetitorsPage() {
       setLoading(true);
       setError('');
       const data = await api.getCompetitors();
-      setCompetitors(Array.isArray(data) ? data : data.data || []);
+      setCompetitors(recordRows(data));
     } catch (err) {
       setError(err.message);
     } finally {
