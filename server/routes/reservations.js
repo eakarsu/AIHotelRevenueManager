@@ -8,9 +8,14 @@ router.get('/', async (req, res) => {
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
     const offset = (page - 1) * limit;
-    const countResult = await pool.query('SELECT COUNT(*) FROM reservations');
+    const where = []; const wp = [];
+    if (req.query.status) { wp.push(req.query.status); where.push(`status = $${wp.length}`); }
+    if (req.query.channel) { wp.push(req.query.channel); where.push(`channel = $${wp.length}`); }
+    if (req.query.q) { wp.push(`%${req.query.q}%`); where.push(`(guest_name ILIKE $${wp.length} OR room_number ILIKE $${wp.length} OR status ILIKE $${wp.length})`); }
+    const wsql = where.length ? ` WHERE ${where.join(' AND ')}` : '';
+    const countResult = await pool.query(`SELECT COUNT(*) FROM reservations${wsql}`, wp);
     const total = parseInt(countResult.rows[0].count);
-    const result = await pool.query('SELECT * FROM reservations ORDER BY check_in ASC LIMIT $1 OFFSET $2', [limit, offset]);
+    const result = await pool.query(`SELECT * FROM reservations${wsql} ORDER BY check_in ASC LIMIT $${wp.length + 1} OFFSET $${wp.length + 2}`, [...wp, limit, offset]);
     res.json({ data: result.rows, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
   } catch (err) {
     console.error('Get reservations error:', err);

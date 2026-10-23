@@ -43,6 +43,7 @@ const route_gap_no_webhook_surface_for_ota_event = require('./routes/gap-no-webh
 const route_gap_no_file_upload_for_guest_documents = require('./routes/gap-no-file-upload-for-guest-documents');
 const route_gap_no_multi_property_fleet_management = require('./routes/gap-no-multi-property-fleet-management');
 const app = express();
+app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 const PORT = process.env.BACKEND_PORT || 4000;
 const FRONTEND_PORT = process.env.FRONTEND_PORT || 3000;
 
@@ -128,6 +129,7 @@ app.use('/api/report-workspace', require("./aiWorkspace.cjs").createAIWorkspaceR
   aiRateLimiter: aiWorkspaceSupport.createWorkspaceLimiter(), features: require("./aiWorkspaceFeatures.json"),
 }));
 
+app.use('/api/feature-pack', require('./routes/featurePack'));
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found.' });
